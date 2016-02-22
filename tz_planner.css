@@ -1,0 +1,69 @@
+/* TODO: Make this guy pretty on an iPhone. Single dial with dial titles. */
+
+h1 {
+    color: #000;
+    font-family: "Helvetica";
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    text-align: center;
+    }
+
+.dropdown,
+.swapper {
+    position: absolute;
+    z-index: 100;
+    }
+.dropdown:hover {
+    z-index: 1000;
+    }
+
+.dropdown *,
+.swapper * {
+    background: #fff;
+    font-family: "Helvetica";
+    }
+
+.dropdown button,
+.swapper button {
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 5px 20px;
+    }
+    .swapper button { color: #ccc; }
+.dropdown:hover button,
+.swapper:hover button {
+    border-color: #ccc;
+    cursor: pointer;
+    }
+    .swapper:hover button { color: #999; }
+.dropdown button::after {
+    color: #fff;
+    content: "▿";
+    margin-left: 20px;
+    }
+.dropdown:hover button::after {
+    color: #999;
+    }
+
+.dropdown ul {
+    cursor: default;
+    display: none;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+    }
+.dropdown ul.active {
+    display: block;
+    }
+
+.dropdown ul li {
+    padding: 0 20px;
+    }
+.dropdown ul li:hover {
+    background: #eee;
+    cursor: pointer;
+    }
