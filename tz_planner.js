@@ -133,8 +133,7 @@ function drawSvg (primTz, secTz, difference) {
 
     // Define clipping paths for day/night distinction in dials.
     var defs = document.createElementNS(SVG_NS, "defs");
-    // TODO: Remove last argument (yPos), where does it come from?
-    var clipPathTop = makeClipPath(CIRCLE_MASK_TOP_ID, 350);
+    var clipPathTop = makeClipPath(CIRCLE_MASK_TOP_ID, CANVAS_HEIGHT - CIRCLE_ORIG_Y_POS);
     var clipPathBottom = makeClipPath(CIRCLE_MASK_BOTTOM_ID, CIRCLE_ORIG_Y_POS);
     defs.appendChild(clipPathTop);
     defs.appendChild(clipPathBottom);
