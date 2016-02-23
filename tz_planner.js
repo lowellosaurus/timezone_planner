@@ -23,6 +23,8 @@ const INNER_DIAL_SPECS = {
     padding:    -60 // -1 * (band_width + 15) to position text inside dial 
 };
 
+const HOUR_LINE_WIDTH = { min: 2, maj: 6 };
+
 const CIRCLE_ORIG_Y_POS = CANVAS_HEIGHT - OUTER_DIAL_SPECS.radius - CANVAS_MARGIN;
 
 const CIRCLE_MASK_TOP_ID    = 'view-circle-top';
@@ -249,9 +251,9 @@ function makeDial (lightColor, darkColor, dialSpecs, leftMargin) {
     // Only draw hour lines for half of the circle since they radiate out
     // from both sides of the center. Angle in degrees.
     for (var angle = 0; angle < 180; angle += 15) {
-        var lineWidth = 2;
+        var lineWidth = HOUR_LINE_WIDTH.min;
         // Increase the line weight every 3rd hour.
-        if (angle % 45 === 0) lineWidth = 6;
+        if (angle % 45 === 0) lineWidth = HOUR_LINE_WIDTH.maj;
 
         var line = document.createElementNS(SVG_NS, "line");
         line.setAttribute("x1", x1);
