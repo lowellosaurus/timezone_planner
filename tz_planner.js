@@ -2,38 +2,38 @@
 
 // TODO: Make this independent of the styles in tz_conv.css on which it
 // currently relies heavily.
-const SVG_NS = "http://www.w3.org/2000/svg";
+var SVG_NS = "http://www.w3.org/2000/svg";
 
 // TODO: This chart is too large. Make it about 2/3 the size.
-const CANVAS_HEIGHT   = 1100;
-const CANVAS_WIDTH    = 1600;
-const CANVAS_BG_COLOR = "#fff";
+var CANVAS_HEIGHT   = 1100;
+var CANVAS_WIDTH    = 1600;
+var CANVAS_BG_COLOR = "#fff";
 
-const CANVAS_MARGIN = 75;
+var CANVAS_MARGIN = 75;
 
-const OUTER_DIAL_SPECS = {
+var OUTER_DIAL_SPECS = {
     radius:     300,
     band_width: 40,
     padding:    15
 };
 
-const INNER_DIAL_SPECS = {
+var INNER_DIAL_SPECS = {
     radius:     250,
     band_width: 45,
     padding:    -60 // -1 * (band_width + 15) to position text inside dial 
 };
 
-const HOUR_LINE_WIDTH = { min: 2, maj: 6 };
+var HOUR_LINE_WIDTH = { min: 2, maj: 6 };
 
-const CIRCLE_ORIG_Y_POS = CANVAS_HEIGHT - OUTER_DIAL_SPECS.radius - CANVAS_MARGIN;
+var CIRCLE_ORIG_Y_POS = CANVAS_HEIGHT - OUTER_DIAL_SPECS.radius - CANVAS_MARGIN;
 
-const CIRCLE_MASK_TOP_ID    = 'view-circle-top';
-const CIRCLE_MASK_BOTTOM_ID = 'view-circle-bottom';
+var CIRCLE_MASK_TOP_ID    = 'view-circle-top';
+var CIRCLE_MASK_BOTTOM_ID = 'view-circle-bottom';
 
-const TITLE_FONT_SIZE      = 40;
-const HOUR_LABEL_FONT_SIZE = 24;
+var TITLE_FONT_SIZE      = 40;
+var HOUR_LABEL_FONT_SIZE = 24;
 
-const COLORS = { 
+var COLORS = {
     blue:   {light: "#36f", dark: "#339"},
     green:  {light: "#393", dark: "#363"},
     // TODO: Add more color options when I add ability to change default colors.
@@ -48,7 +48,7 @@ const COLORS = {
 // per country).
 // TODO: Build this object dynamically from file.
 // TODO: Add more countries to this list.
-const TIMEZONES = {
+var TIMEZONES = {
     afg: {
         flag:   "&#x1F1E6;&#x1F1EB;",
         title:  "Afghanistan",
