@@ -15,9 +15,12 @@ foreach (range('A', 'Z') as $index => $letter) {
 // Copied table, manually cleaned up notes, used sed to constrain the line to
 // only the country code and name: s/\t\d\d\d\d.*$//g
 
+// Expect each line in FILE to be in following format: TH Thailand
+$opts = getopt('', ['file:']);
+$FILE = $opts['file'];
+
 $FLAG_CHAR_PREFIX = '&#x1F1';
 $country_timezones = [];
-$FILE = 'abbr_list.txt';
 $fh = fopen($FILE, 'r');
 if ($fh) {
     while ($line = fgets($fh)) {
