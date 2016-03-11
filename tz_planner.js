@@ -46,46 +46,12 @@ var COLORS = {
 // TODO: Future improvement, Change the format of this dictionary. Maybe later
 // when the dropdown becomes two-dimensional (if there is more than one timezone
 // per country).
-// TODO: Build this object dynamically from file.
-// TODO: Add more countries to this list.
-var TIMEZONES = {
-    afg: {
-        flag:   "&#x1F1E6;&#x1F1EB;",
-        title:  "Afghanistan",
-        offset: 4.5
-    },
-    esp: {
-        flag:   "&#x1F1EA;&#x1F1F8;",
-        title:  "Spain",
-        offset: 1
-    },
-    us_est: {
-        flag:   "&#x1F1FA;&#x1F1F8;",
-        title:  "United States (EST)",
-        offset: -5
-    },
-    us_cst: {
-        flag:   "&#x1F1FA;&#x1F1F8;",
-        title:  "United States (CST)",
-        offset: -6
-    },
-    us_mst: {
-        flag:   "&#x1F1FA;&#x1F1F8;",
-        title:  "United States (MST)",
-        offset: -7
-    },
-    us_pst: {
-        flag:   "&#x1F1FA;&#x1F1F8;",
-        title:  "United States (PST)",
-        offset: -8
-    },
-
-};
+var TIMEZONES = new TimeZoneList();
 
 function drawChart (primTz, secTz) {
     // Default parameters.
-    if (typeof(primTz) === 'undefined') primTz = TIMEZONES.us_est;
-    if (typeof(secTz)  === 'undefined') secTz  = TIMEZONES.afg;
+    if (typeof(primTz) === 'undefined') primTz = TIMEZONES['united_states_new_york'];
+    if (typeof(secTz)  === 'undefined') secTz  = TIMEZONES['spain_madrid'];
 
     // Set the default colors here.
     // TODO: Future improvement, allow picking from a variety of colors.
@@ -97,6 +63,8 @@ function drawChart (primTz, secTz) {
     // Reset the body element so we can draw the chart on a clean slate.
     // I figure this is easier than rotating the two inner dials, changing the
     // titles, spinning the hour labels, etc.
+    // TODO: IE seems to choke on this remove() call. Maybe it is because we are
+    // trying to remove the body element?
     document.body.remove();
     document.body = document.createElement("body");
 
@@ -452,6 +420,9 @@ function hideDropdown (elem) {
 }
 
 // TODO: Make the dropdowns work on an iPhone.
+// TODO: Make the dropdowns function like dropdowns; show current selection in 
+// the middle of the list if that's where it is (do not start all selections 
+// from the top), have it scroll.
 function createDropdownLi (title, firstTz, secondTz) {
     var li = document.createElement("li");
     li.innerHTML = title;
