@@ -48,6 +48,7 @@ var COLORS = {
 // per country).
 var TIMEZONES = new TimeZoneList();
 
+// TODO: Pull the timezones from the URL if it is there.
 function drawChart (primTz, secTz) {
     // Default parameters.
     if (typeof(primTz) === 'undefined') primTz = TIMEZONES['united_states_new_york'];
@@ -58,8 +59,6 @@ function drawChart (primTz, secTz) {
     primTz.color = COLORS.blue;
     secTz.color  = COLORS.green;
 
-    var tzDiff = primTz.offset - secTz.offset;
-
     // Reset the body element so we can draw the chart on a clean slate.
     // I figure this is easier than rotating the two inner dials, changing the
     // titles, spinning the hour labels, etc.
@@ -69,7 +68,7 @@ function drawChart (primTz, secTz) {
     document.body = document.createElement("body");
 
     // Draw the svg elements.
-    drawSvg(primTz, secTz, tzDiff);
+    drawSvg(primTz, secTz);
 
     // Add the html elements after drawing the svg elements.
     addHtmlDialTitles(primTz, secTz, TIMEZONES); // Left.
@@ -89,13 +88,14 @@ function drawChart (primTz, secTz) {
     swapper.appendChild(swapButton);
     document.body.appendChild(swapper);
 
-    // TODO: Add red "second hand" that displays the current time on the dials.
     // TODO: Highlight the first dropdown menu when the page first loads, then fade out.
 }
 
 // TODO: Remove the extra space at the top where the titles (now drawn in html)
 // used to go. Add top margin to the svg element to make up for it.
-function drawSvg (primTz, secTz, difference) {
+function drawSvg (primTz, secTz) {
+    var difference = primTz.offset - secTz.offset;
+
     // Make the base SVG element.
     var canvas = document.createElementNS(SVG_NS, "svg");
     canvas.setAttribute("height", CANVAS_HEIGHT);
@@ -125,6 +125,17 @@ function drawSvg (primTz, secTz, difference) {
     canvas.appendChild(leftInnerDial);
     canvas.appendChild(leftInnerLabels);
 
+    // Add red line indicating current time to left dial.
+    var curUTCHour = (new Date()).getUTCHours() + ( (new Date()).getUTCMinutes() / 60 );
+    var curPrimTzHour = curUTCHour + primTz.offset;
+    // Negative hour indicates that the hour is before midnight.
+    curPrimTzHour = (curPrimTzHour < 0) ? 24 + curPrimTzHour : curPrimTzHour;
+    var primNowLineAngle = curPrimTzHour * 15; // Degrees = hours * (360 degrees / 24 hours)
+    var leftCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH / 4,
+        CIRCLE_ORIG_Y_POS, INNER_DIAL_SPECS.radius / 2,
+        OUTER_DIAL_SPECS.radius / 2 + OUTER_DIAL_SPECS.band_width * 2, primNowLineAngle);
+    canvas.appendChild(leftCurrentTimeLine);
+
     // Draw the right outer dial.
     var rightOuterDial   = makeDial(secTz.color.light, secTz.color.dark,
         OUTER_DIAL_SPECS, CANVAS_WIDTH / 2);
@@ -134,6 +145,10 @@ function drawSvg (primTz, secTz, difference) {
     canvas.appendChild(rightOuterDial);
     canvas.appendChild(rightOuterLabels);
     
+    
+    // TODO: IDEA: Possibly remove the second dial? And the chart title?
+    // Add a "What's this?" text box describing what it is.
+
     // Draw the right inner dial.
     var rightInnerDial = makeDial(primTz.color.light, primTz.color.dark,
         INNER_DIAL_SPECS, CANVAS_WIDTH / 2);
@@ -145,8 +160,41 @@ function drawSvg (primTz, secTz, difference) {
     canvas.appendChild(rightInnerDial);
     canvas.appendChild(rightInnerLabels);
 
+    // Add red line indicating current time to right dial.
+    var curSecTzHour = curUTCHour + secTz.offset;
+    // Negative hour indicates that the hour is before midnight.
+    curSecTzHour = (curSecTzHour < 0) ? 24 + curSecTzHour : curSecTzHour;
+    var secNowLineAngle = curSecTzHour * 15; // Degrees = hours * (360 degrees / 24 hours)
+    var rightCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH * 3/4,
+        CIRCLE_ORIG_Y_POS, INNER_DIAL_SPECS.radius / 2,
+        OUTER_DIAL_SPECS.radius / 2 + OUTER_DIAL_SPECS.band_width * 2, secNowLineAngle);
+    canvas.appendChild(rightCurrentTimeLine);
+
     // Add the SVG element to the document.
     document.body.appendChild(canvas);
+}
+
+function makeCurrentTimeLine (color, xPos, yPos, startDist, endDist, angle) {
+    var line = document.createElementNS(SVG_NS, "line");
+    line.setAttribute("x1", xPos + startDist);
+    line.setAttribute("y1", yPos + startDist);
+    line.setAttribute("x2", xPos + endDist);
+    line.setAttribute("y2", yPos + endDist);
+    line.setAttribute("stroke", color);
+    line.setAttribute("stroke-width", 4);
+    // Add 45 degrees to the rotation because the line starts (x1, y1) at the
+    // circle's origin and extends (x2, y2) its length down and to the right.
+    line.setAttribute("transform", "rotate(" + (45 + angle) + " " + xPos + " " + yPos + ")");
+
+    var outline = line.cloneNode();
+    outline.setAttribute("stroke", "#fff");
+    outline.setAttribute("stroke-width", 8);
+
+    var group = document.createElementNS(SVG_NS, "g");
+    group.appendChild(outline);
+    group.appendChild(line);
+
+    return group;
 }
 
 // TODO: Remove yPos?
@@ -335,6 +383,9 @@ function rotateDial (dialGroup, offset) {
     dialGroup.setAttribute("transform", "rotate(" + (offset * 15) + " " + x + " " + y + ")");
 }
 
+// TODO: Add current time after dropdown boxes. For example,
+// United States (New York)    9:46 pm
+// Spain (Madrid)              3:46 am
 function addHtmlDialTitles (primTz, secTz, list, leftMargin) {
     // Default parameters.
     if (typeof(leftMargin) === 'undefined') leftMargin = 0;
