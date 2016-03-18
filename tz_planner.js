@@ -5,8 +5,8 @@
 var SVG_NS = "http://www.w3.org/2000/svg";
 
 // TODO: This chart is too large. Make it about 2/3 the size.
-var CANVAS_HEIGHT   = 1100;
-var CANVAS_WIDTH    = 1600;
+var CANVAS_HEIGHT   = 800;
+var CANVAS_WIDTH    = 800;
 var CANVAS_BG_COLOR = "#fff";
 
 var CANVAS_MARGIN = 75;
@@ -72,18 +72,15 @@ function drawChart (primTz, secTz) {
 
     // Add the html elements after drawing the svg elements.
     addHtmlDialTitles(primTz, secTz, TIMEZONES); // Left.
-    addHtmlDialTitles(secTz, primTz, TIMEZONES, CANVAS_WIDTH / 2); // Right.
-    addHtmlChartTitles(primTz, secTz); // Main title.
     
     // Draw the flip-flop button.
     var swapper = document.createElement("div");
     swapper.setAttribute("class", "swapper");
-    // - TITLE_FONT_SIZE in order to center the swapper button.
-    swapper.setAttribute("style", "top: " + (TITLE_FONT_SIZE * 6) + "px;"
-        + "left: " + (Math.floor(CANVAS_WIDTH / 2) - TITLE_FONT_SIZE) + "px;");
+    swapper.setAttribute("style", "top: " + (TITLE_FONT_SIZE * 2) + "px;"
+        + "left: " + (CANVAS_MARGIN / 2) + "px;");
     var swapButton = document.createElement("button");
     swapButton.setAttribute("style", "font-size: " + TITLE_FONT_SIZE + "px;");
-    swapButton.innerHTML = "&#x21c4;";
+    swapButton.innerHTML = "&#x21c5;";
     swapper.addEventListener("click", function() { drawChart(secTz, primTz); });
     swapper.appendChild(swapButton);
     document.body.appendChild(swapper);
@@ -100,10 +97,11 @@ function drawSvg (primTz, secTz) {
     var canvas = document.createElementNS(SVG_NS, "svg");
     canvas.setAttribute("height", CANVAS_HEIGHT);
     canvas.setAttribute("width", CANVAS_WIDTH);
+    canvas.setAttribute("style", "margin-top: " + (TITLE_FONT_SIZE * 3) + "px;");
 
     // Define clipping paths for day/night distinction in dials.
     var defs = document.createElementNS(SVG_NS, "defs");
-    var clipPathTop = makeClipPath(CIRCLE_MASK_TOP_ID, CANVAS_HEIGHT - CIRCLE_ORIG_Y_POS);
+    var clipPathTop = makeClipPath(CIRCLE_MASK_TOP_ID, CANVAS_MARGIN);
     var clipPathBottom = makeClipPath(CIRCLE_MASK_BOTTOM_ID, CIRCLE_ORIG_Y_POS);
     defs.appendChild(clipPathTop);
     defs.appendChild(clipPathBottom);
@@ -111,7 +109,7 @@ function drawSvg (primTz, secTz) {
 
     // Draw the left outer dial.
     var leftOuterDial   = makeDial(primTz.color.light, primTz.color.dark, OUTER_DIAL_SPECS);
-    var leftOuterLabels = makeHourLabels(CANVAS_WIDTH / 4, CIRCLE_ORIG_Y_POS,
+    var leftOuterLabels = makeHourLabels(CANVAS_WIDTH / 2, CIRCLE_ORIG_Y_POS,
         OUTER_DIAL_SPECS.radius + OUTER_DIAL_SPECS.padding, primTz.color.dark);
     canvas.appendChild(leftOuterDial);
     canvas.appendChild(leftOuterLabels);
@@ -119,7 +117,7 @@ function drawSvg (primTz, secTz) {
     // Draw the left inner dial.
     var leftInnerDial = makeDial(secTz.color.light, secTz.color.dark, INNER_DIAL_SPECS);
     rotateDial(leftInnerDial, difference);
-    var leftInnerLabels = makeHourLabels(CANVAS_WIDTH / 4, CIRCLE_ORIG_Y_POS,
+    var leftInnerLabels = makeHourLabels(CANVAS_WIDTH / 2, CIRCLE_ORIG_Y_POS,
         INNER_DIAL_SPECS.radius + INNER_DIAL_SPECS.padding, secTz.color.dark, difference);
     // TODO: Can I move the rotation piece out of the label maker?
     canvas.appendChild(leftInnerDial);
@@ -131,44 +129,10 @@ function drawSvg (primTz, secTz) {
     // Negative hour indicates that the hour is before midnight.
     curPrimTzHour = (curPrimTzHour < 0) ? 24 + curPrimTzHour : curPrimTzHour;
     var primNowLineAngle = curPrimTzHour * 15; // Degrees = hours * (360 degrees / 24 hours)
-    var leftCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH / 4,
+    var leftCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH / 2,
         CIRCLE_ORIG_Y_POS, INNER_DIAL_SPECS.radius / 2,
         OUTER_DIAL_SPECS.radius / 2 + OUTER_DIAL_SPECS.band_width * 2, primNowLineAngle);
     canvas.appendChild(leftCurrentTimeLine);
-
-    // Draw the right outer dial.
-    var rightOuterDial   = makeDial(secTz.color.light, secTz.color.dark,
-        OUTER_DIAL_SPECS, CANVAS_WIDTH / 2);
-    var rightOuterLabels = makeHourLabels(CANVAS_WIDTH / 4, CIRCLE_ORIG_Y_POS,
-        OUTER_DIAL_SPECS.radius + OUTER_DIAL_SPECS.padding, secTz.color.dark,
-        0, CANVAS_WIDTH / 2);
-    canvas.appendChild(rightOuterDial);
-    canvas.appendChild(rightOuterLabels);
-    
-    
-    // TODO: IDEA: Possibly remove the second dial? And the chart title?
-    // Add a "What's this?" text box describing what it is.
-
-    // Draw the right inner dial.
-    var rightInnerDial = makeDial(primTz.color.light, primTz.color.dark,
-        INNER_DIAL_SPECS, CANVAS_WIDTH / 2);
-    rotateDial(rightInnerDial, -1 * difference);
-    var rightInnerLabels = makeHourLabels(CANVAS_WIDTH / 4, CIRCLE_ORIG_Y_POS,
-        INNER_DIAL_SPECS.radius + INNER_DIAL_SPECS.padding, primTz.color.dark,
-        -1 * difference, CANVAS_WIDTH / 2);
-    // TODO: Can I move the rotation piece out of the label maker?
-    canvas.appendChild(rightInnerDial);
-    canvas.appendChild(rightInnerLabels);
-
-    // Add red line indicating current time to right dial.
-    var curSecTzHour = curUTCHour + secTz.offset;
-    // Negative hour indicates that the hour is before midnight.
-    curSecTzHour = (curSecTzHour < 0) ? 24 + curSecTzHour : curSecTzHour;
-    var secNowLineAngle = curSecTzHour * 15; // Degrees = hours * (360 degrees / 24 hours)
-    var rightCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH * 3/4,
-        CIRCLE_ORIG_Y_POS, INNER_DIAL_SPECS.radius / 2,
-        OUTER_DIAL_SPECS.radius / 2 + OUTER_DIAL_SPECS.band_width * 2, secNowLineAngle);
-    canvas.appendChild(rightCurrentTimeLine);
 
     // Add the SVG element to the document.
     document.body.appendChild(canvas);
@@ -228,7 +192,7 @@ function makeDial (lightColor, darkColor, dialSpecs, leftMargin) {
     // Default parameters.
     if (typeof(leftMargin) === 'undefined') leftMargin = 0;
 
-    var circleCenterX = CANVAS_WIDTH / 4 + leftMargin;
+    var circleCenterX = CANVAS_WIDTH / 2 + leftMargin;
     var circleCenterY = CIRCLE_ORIG_Y_POS;
 
     // Draw the circular dials.
@@ -395,11 +359,11 @@ function addHtmlDialTitles (primTz, secTz, list, leftMargin) {
     var dropdown = document.createElement("div");
     dropdown.setAttribute("class", "dropdown");
 
-    var fontSize = TITLE_FONT_SIZE;
+    var fontSize         = TITLE_FONT_SIZE;
     var subtitleFontSize = Math.floor(fontSize * 0.9);
-    var lineHeight = Math.floor(fontSize * 1.5);
-    var leftIndent = Math.floor(CANVAS_WIDTH / 10) + leftMargin;
-    var topPadding = Math.floor(fontSize * 5);
+    var lineHeight       = Math.floor(fontSize * 1.5);
+    var leftIndent       = Math.floor(CANVAS_WIDTH / 5) + leftMargin;
+    var topPadding       = fontSize;
 
     var subtitleDropdown = dropdown.cloneNode();
     subtitleDropdown.setAttribute("style", "top: " + (topPadding + lineHeight) + "px;"
