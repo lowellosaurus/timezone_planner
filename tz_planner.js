@@ -94,7 +94,33 @@ function drawChart (primTz, secTz) {
     swapper.appendChild(swapButton);
     document.body.appendChild(swapper);
 
+    document.body.appendChild(buildExplanationText());
+
     // TODO: Highlight the first dropdown menu when the page first loads, then fade out.
+}
+
+function buildExplanationText () {
+    var container = document.createElement("div");
+    container.setAttribute("class", "explanation");
+
+    var header = document.createElement("h1");
+    header.innerHTML = "Time Zone Dial";
+    container.appendChild(header);
+
+    var body = [
+        "Visualize the difference in local times between different time zones. Useful tool to help plan meetings, phone calls, and travel with friends, family, and coworkers in different time zones.",
+        "Click on the blue text to select a different time zone for the outer dial.",
+        "Click on the green text to change the innner dial's time zone.",
+        "Click on the arrows to swap the inner and outer dials.",
+        "The red line on the dials indicates the current time."
+    ];
+    for (var i = 0; i < body.length; i++) {
+        var paragraph = document.createElement("p");
+        paragraph.innerHTML = body[i];
+        container.appendChild(paragraph);
+    }
+
+    return container;
 }
 
 // TODO: Remove the extra space at the top where the titles (now drawn in html)
@@ -480,25 +506,4 @@ function createDropdownLi (title, firstTz, secondTz) {
     // Add listener to dismiss the dropdown when a list item is selected.
     li.addEventListener("click", function() { drawChart(firstTz, secondTz); });
     return li;
-}
-
-function addHtmlChartTitles (primTz, secTz) {
-    var fontSize   = TITLE_FONT_SIZE;
-    var lineHeight = Math.floor(fontSize * 1.25);
-
-    var subtitle = document.createElement("h1");
-    subtitle.setAttribute("style", "font-size: " + fontSize + "px;"
-        + "width: " + CANVAS_WIDTH + "px;");
-
-    var title = subtitle.cloneNode();
-    title.innerHTML = primTz.title + " / " + secTz.title;
-    title.setAttribute("style", title.getAttribute("style")
-        + "top: " + CANVAS_MARGIN + "px;");
-
-    subtitle.innerHTML = "Local Time Conversion Chart";
-    subtitle.setAttribute("style", subtitle.getAttribute("style")
-        + "top: " + (CANVAS_MARGIN + lineHeight) + "px;");
-
-    document.body.appendChild(title);
-    document.body.appendChild(subtitle);
 }
