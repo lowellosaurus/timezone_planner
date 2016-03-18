@@ -48,11 +48,20 @@ var COLORS = {
 // per country).
 var TIMEZONES = new TimeZoneList();
 
+// Global variable to store interval ID for current time line drawer.
+var currTimeLineIntervalID = null;
+
 // TODO: Pull the timezones from the URL if it is there.
 function drawChart (primTz, secTz) {
     // Default parameters.
     if (typeof(primTz) === 'undefined') primTz = TIMEZONES['united_states_new_york'];
     if (typeof(secTz)  === 'undefined') secTz  = TIMEZONES['spain_madrid'];
+
+    // Clear an interval if one already exists.
+    if (Boolean(currTimeLineIntervalID)) {
+        window.clearInterval(currTimeLineIntervalID);
+        currTimeLineIntervalID = null;
+    }
 
     // Set the default colors here.
     // TODO: Future improvement, allow picking from a variety of colors.
@@ -123,42 +132,69 @@ function drawSvg (primTz, secTz) {
     canvas.appendChild(leftInnerDial);
     canvas.appendChild(leftInnerLabels);
 
-    // Add red line indicating current time to left dial.
+    // Add the SVG element to the document.
+    document.body.appendChild(canvas);
+
+    // Add red line indicating current time to dial.
+    addCurrentTimeLine(primTz);
+    // Set a global variable so that the interval can be cleared when the chart
+    // is redrawn (every minute).
+    currTimeLineIntervalID = window.setInterval(addCurrentTimeLine, 60 * 1000, primTz);
+}
+
+function addCurrentTimeLine (primTz) {
+    var line = document.createElementNS(SVG_NS, "line");
+
+    var xPos = CANVAS_WIDTH / 2;
+    var yPos = CIRCLE_ORIG_Y_POS;
+
+    var startDist = INNER_DIAL_SPECS.radius / 2;
+    line.setAttribute("x1", xPos + startDist);
+    line.setAttribute("y1", yPos + startDist);
+
+    var endDist = OUTER_DIAL_SPECS.radius - (OUTER_DIAL_SPECS.padding * 5);
+    line.setAttribute("x2", xPos + endDist);
+    line.setAttribute("y2", yPos + endDist);
+
+    line.setAttribute("stroke", "#f00");
+    line.setAttribute("stroke-width", 4);
+    
+    // Rotate the current time line so that it is properly located on the dial.
     var curUTCHour = (new Date()).getUTCHours() + ( (new Date()).getUTCMinutes() / 60 );
     var curPrimTzHour = curUTCHour + primTz.offset;
     // Negative hour indicates that the hour is before midnight.
     curPrimTzHour = (curPrimTzHour < 0) ? 24 + curPrimTzHour : curPrimTzHour;
-    var primNowLineAngle = curPrimTzHour * 15; // Degrees = hours * (360 degrees / 24 hours)
-    var leftCurrentTimeLine = makeCurrentTimeLine("#f00", CANVAS_WIDTH / 2,
-        CIRCLE_ORIG_Y_POS, INNER_DIAL_SPECS.radius / 2,
-        OUTER_DIAL_SPECS.radius / 2 + OUTER_DIAL_SPECS.band_width * 2, primNowLineAngle);
-    canvas.appendChild(leftCurrentTimeLine);
-
-    // Add the SVG element to the document.
-    document.body.appendChild(canvas);
-}
-
-function makeCurrentTimeLine (color, xPos, yPos, startDist, endDist, angle) {
-    var line = document.createElementNS(SVG_NS, "line");
-    line.setAttribute("x1", xPos + startDist);
-    line.setAttribute("y1", yPos + startDist);
-    line.setAttribute("x2", xPos + endDist);
-    line.setAttribute("y2", yPos + endDist);
-    line.setAttribute("stroke", color);
-    line.setAttribute("stroke-width", 4);
+    // degrees = hours * (360 degrees / 24 hours)
     // Add 45 degrees to the rotation because the line starts (x1, y1) at the
     // circle's origin and extends (x2, y2) its length down and to the right.
-    line.setAttribute("transform", "rotate(" + (45 + angle) + " " + xPos + " " + yPos + ")");
+    var angle = 45 + curPrimTzHour * 15;
+    line.setAttribute("transform", "rotate(" + angle + " " + xPos + " " + yPos + ")");
 
     var outline = line.cloneNode();
     outline.setAttribute("stroke", "#fff");
     outline.setAttribute("stroke-width", 8);
 
-    var group = document.createElementNS(SVG_NS, "g");
-    group.appendChild(outline);
-    group.appendChild(line);
+    var currTimeGroupID = "current_time_line";
+    var currTimeGroup = document.createElementNS(SVG_NS, "g");
+    currTimeGroup.setAttribute("id", currTimeGroupID);
+    currTimeGroup.appendChild(outline);
+    currTimeGroup.appendChild(line);
 
-    return group;
+    var canvas = document.body.getElementsByTagName("svg")[0];
+
+    // Remove the current time line if it has already been drawn. The only time
+    // we won't find the current time line is the first time the line is drawn
+    // after the svg is drawn.
+    var svgGroups = canvas.getElementsByTagName("g");
+    for (var i = 0; i < svgGroups.length; i++) {
+        var group = svgGroups[i];
+        if (group.getAttribute("id") == currTimeGroupID) {
+            group.remove();
+            break; // No use continuing. We've already removed what we came for.
+        }
+    }
+    
+    canvas.appendChild(currTimeGroup);
 }
 
 // TODO: Remove yPos?
