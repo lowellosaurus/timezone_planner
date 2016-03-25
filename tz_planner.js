@@ -104,7 +104,7 @@ function buildExplanationText () {
     container.setAttribute("class", "explanation");
 
     var header = document.createElement("h1");
-    header.innerHTML = "Time Zone Dial";
+    header.innerHTML = "Time Zone Planner";
     container.appendChild(header);
 
     var body = [
