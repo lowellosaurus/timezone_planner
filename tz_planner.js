@@ -123,8 +123,6 @@ function buildExplanationText () {
     return container;
 }
 
-// TODO: Remove the extra space at the top where the titles (now drawn in html)
-// used to go. Add top margin to the svg element to make up for it.
 function drawSvg (primTz, secTz) {
     var difference = primTz.offset - secTz.offset;
 
