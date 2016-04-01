@@ -85,6 +85,8 @@ Caveat Emptor
 
 This project was undertaken to scratch a personal itch and, as such, it is personalized to how I use it. Your mileage may vary.
 
+Windows and Samsung [do not support flag emoji](http://emojipedia.org/flags/), so flags will display as their corresponding two letter country codes.
+
 Additionally, my apologies for all of the non-idiomatic or inefficient javascript, php, or css I've written. I used this project to exercise my dust off my skills in those languages as I've not touched them in more than a year... Not that I was much better writing in them then.
 
 I have made no effort at compatability with Internet Explorer or any other browser, and as a result it may look wonky to you. `document.body.remove()` seems to throw at least a few versions of IE for a loop (if you have any advice on this, it'd be much appreciated).
