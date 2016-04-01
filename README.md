@@ -1,7 +1,9 @@
 Time Zone Planner
 =================
 
-Time Zone Planner is a tool to help visualize the difference between two time zones. It is easy enough to find out the current time in a different time zone, however doing mental math while juggling two time zones can be a surprisingly frustrating task. This tool aims to serve as a visual aid when you are trying to schedule a video conference when it's morning in London but not during Washington DC's lunch hour. Or when you are trying to figure out what time it will be in Boston if you want to call your sister in Seattle between when she gets home from work and when she eats dinner.
+Time Zone Planner is a tool to help visualize the difference between two time zones. It is easy enough to find out the current time in a different time zone, however doing mental math while juggling two time zones can be a surprisingly frustrating task. This tool aims to serve as a visual aid when you are trying to schedule a video conference when it's morning in London but not during Washington DC's lunch hour. Or when you are trying to figure out what time it will be in Boston if you want to call your sister in Seattle between when she gets home from work and when she sits down to eat dinner.
+
+![screenshot](screenshot.png)
 
 An running example of this tool can be found at [lowellosaurus.com/timezone](http://lowellosaurus.com/timezone/).
 
