@@ -47,6 +47,8 @@
     }
 .dropdown ul.active {
     display: block;
+    height: 700px;
+    overflow-y: scroll;
     }
 
 .dropdown ul li {
