@@ -14,6 +14,7 @@
     }
 
 .dropdown button,
+.dropdown input,
 .swapper button {
     border: 2px solid #fff;
     border-radius: 10px;
@@ -27,13 +28,28 @@
     cursor: pointer;
     }
     .swapper:hover button { color: #999; }
-.dropdown button::after {
+.dropdown button::after,
+.dropdown input::after {
     color: #fff;
     content: "▿";
     margin-left: 20px;
     }
-.dropdown:hover button::after {
+.dropdown:hover button::after,
+.dropdown:hover input::after {
     color: #999;
+    }
+.dropdown button.hidden {
+    display: none;
+    }
+
+.dropdown input {
+    background: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><text y=%221em%22 font-size=%2290%22>🔎</text></svg>') no-repeat;
+    background-position: left 0.4em top 100%;
+    padding-left: 1.75em;
+    display: none;
+    }
+.dropdown input.active {
+    display: block;
     }
 
 .dropdown ul {
@@ -47,7 +63,7 @@
     }
 .dropdown ul.active {
     display: block;
-    height: 700px;
+    max-height: 700px;
     overflow-y: scroll;
     }
 
@@ -57,6 +73,9 @@
 .dropdown ul li:hover {
     background: #eee;
     cursor: pointer;
+    }
+.dropdown ul li.hidden {
+    display: none;
     }
 
 .explanation {

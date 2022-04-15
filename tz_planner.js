@@ -448,10 +448,23 @@ function addHtmlDialTitles (primTz, secTz, list, leftMargin) {
         + "left: " + leftIndent + "px;");
 
     // Add listeners to make the dropdowns function like dropdowns.
-    subtitleDropdown.addEventListener("click", function() { showDropdown(subtitleDropdown); });
-    subtitleDropdown.addEventListener("mouseleave", function() { hideDropdown(subtitleDropdown); });
-    dropdown.addEventListener("click", function() { showDropdown(dropdown); });
-    dropdown.addEventListener("mouseleave", function() { hideDropdown(dropdown); });
+    subtitleDropdown.addEventListener("click", () => {
+        showDropdown(subtitleDropdown);
+        showInputHideButton(subtitleDropdown);
+    });
+    subtitleDropdown.addEventListener("mouseleave", () => {
+        hideDropdown(subtitleDropdown);
+        showButtonHideInput(subtitleDropdown);
+    });
+
+    dropdown.addEventListener("click", () => {
+        showDropdown(dropdown);
+        showInputHideButton(dropdown);
+    });
+    dropdown.addEventListener("mouseleave", () => {
+        hideDropdown(dropdown);
+        showButtonHideInput(dropdown);
+    });
     
     var title    = primTz.flag + " " + primTz.title;
     var subtitle = secTz.flag + " " + secTz.title;
@@ -462,11 +475,21 @@ function addHtmlDialTitles (primTz, secTz, list, leftMargin) {
     button.innerHTML = title;
     dropdown.appendChild(button);
 
+    var titleInput = document.createElement("input");
+    titleInput.setAttribute("type", "text");
+    titleInput.setAttribute("style", `font-size: ${fontSize}px;`);
+    dropdown.appendChild(titleInput);
+
     var subtitleButton = document.createElement("button");
     subtitleButton.setAttribute("style", "color: " + secTz.color.dark + ";"
         + "font-size: " + subtitleFontSize + "px;");
     subtitleButton.innerHTML = subtitle;
     subtitleDropdown.appendChild(subtitleButton);
+
+    var subtitleInput = document.createElement("input");
+    subtitleInput.setAttribute("type", "text");
+    subtitleInput.setAttribute("style", `font-size: ${subtitleFontSize}px;`);
+    subtitleDropdown.appendChild(subtitleInput);
 
     var ul = document.createElement("ul");
     ul.setAttribute("style", "font-size: " + fontSize + "px;");
@@ -507,6 +530,34 @@ function showDropdown (elem) {
 
 function hideDropdown (elem) {
     elem.getElementsByTagName("ul")[0].removeAttribute("class");
+}
+
+function showInputHideButton (elem) {
+    elem.getElementsByTagName("button")[0].setAttribute("class", "hidden");
+    
+    const inputBox = elem.getElementsByTagName("input")[0];
+    inputBox.setAttribute("class", "active");
+    inputBox.focus();
+
+    const tzList = elem.getElementsByTagName("ul")[0];
+    inputBox.addEventListener('input', (e) => filterList(tzList, e.target.value));
+}
+
+function showButtonHideInput (elem) {
+    elem.getElementsByTagName("button")[0].removeAttribute("class");
+
+    const inputBox = elem.getElementsByTagName("input")[0];
+    inputBox.removeAttribute("class");
+}
+
+function filterList (timezones, searchText) {
+    const lowercaseSearchText = searchText.toLowerCase()
+    for (let li of timezones.children) {
+        li.removeAttribute("class");
+        if ( !li.innerText.toLowerCase().includes(lowercaseSearchText) ) {
+            li.setAttribute("class", "hidden");
+        }
+    }
 }
 
 // TODO: Make the dropdowns work on an iPhone.
