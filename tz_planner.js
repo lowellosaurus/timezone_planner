@@ -51,11 +51,26 @@ var TIMEZONES = new TimeZoneList();
 // Global variable to store interval ID for current time line drawer.
 var currTimeLineIntervalID = null;
 
-// TODO: Pull the timezones from the URL if it is there.
+// Expect URL to be formatted ...index.html?tz=united_states_new_york&tz=spain_madrid
+function getTimezonesFromUrl () {
+    const params = (new URL(document.location)).searchParams;
+    const timezones = params.getAll("tz");
+    return timezones.filter( tz => Object.keys(TIMEZONES).includes(tz) );
+}
+
 function drawChart (primTz, secTz) {
-    // Default parameters.
-    if (typeof(primTz) === 'undefined') primTz = TIMEZONES['united_states_new_york'];
-    if (typeof(secTz)  === 'undefined') secTz  = TIMEZONES['spain_madrid'];
+    // Set timezones in the URL if they are passed in to the function (as they
+    // will be when swapping timezones and selecting a new timezone).
+    if (primTz && secTz) {
+        // https://stackoverflow.com/a/41542008
+        var newRelativePathQuery = window.location.pathname + `?tz=${primTz}&tz=${secTz}`;
+        history.pushState(null, '', newRelativePathQuery);
+    }
+
+    // Get timezones from URL or fall back to default timezones.
+    const timezonesFromUrl = getTimezonesFromUrl();
+    primTz = TIMEZONES[ timezonesFromUrl[0] || 'united_states_new_york' ];
+    secTz  = TIMEZONES[ timezonesFromUrl[1] || 'spain_madrid' ];
 
     // Clear an interval if one already exists.
     if (Boolean(currTimeLineIntervalID)) {
@@ -90,7 +105,7 @@ function drawChart (primTz, secTz) {
     var swapButton = document.createElement("button");
     swapButton.setAttribute("style", "font-size: " + TITLE_FONT_SIZE + "px;");
     swapButton.innerHTML = "&#x21c5;";
-    swapper.addEventListener("click", function() { drawChart(secTz, primTz); });
+    swapper.addEventListener("click", () => drawChart(secTz.key, primTz.key) );
     swapper.appendChild(swapButton);
     document.body.appendChild(swapper);
 
@@ -502,6 +517,6 @@ function createDropdownLi (title, firstTz, secondTz) {
     var li = document.createElement("li");
     li.innerHTML = title;
     // Add listener to dismiss the dropdown when a list item is selected.
-    li.addEventListener("click", function() { drawChart(firstTz, secondTz); });
+    li.addEventListener("click", () => drawChart(firstTz.key, secondTz.key) );
     return li;
 }

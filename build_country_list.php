@@ -40,6 +40,7 @@ if ($fh) {
 
         if (count($timezones) < 2) {
             $country_timezones[makeSimpleKey($country_name)] = [
+                'key'    => makeSimpleKey($country_name),
                 'flag'   => $flag,
                 'title'  => $country_name,
                 'offset' => getTzOffsetHours($timezones[0]),
@@ -53,6 +54,7 @@ if ($fh) {
             $common_tz_name = end($tz_name_components);
             $common_tz_name = preg_replace('/_/', ' ', $common_tz_name);
             $country_timezones[makeSimpleKey($country_name . " $common_tz_name")] = [
+                'key'    => makeSimpleKey($country_name . " $common_tz_name"),
                 'flag'   => $flag,
                 'title'  => $country_name . " ($common_tz_name)",
                 'offset' => getTzOffsetHours($tz_name),
